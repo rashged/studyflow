@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StudyFlow — نسخة كاملة بملف واحد</title>
+<style>
+:root{--indigo:#6366f1;--violet:#8b5cf6;--bg:#f7f7ff;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--green:#10b981;--slate:#0f172a}
+html.dark{--bg:#0b1220;--card:#0f172a;--text:#f1f5f9;--muted:#94a3b8;--border:#1e293b}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+a{color:inherit} .bg{background:linear-gradient(#fff,var(--bg))}
+.container{max-width:1120px;margin:0 auto;padding:16px}
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);background:rgba(255,255,255,.7);border-bottom:1px solid var(--border)}
+html.dark .topbar{background:rgba(15,23,42,.7)}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;display:grid;place-items:center;font-weight:800}
+.btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:600;transition:.2s}
+.btn:hover{transform:translateY(-1px)} .btn.primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none}
+.pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;display:inline-flex;gap:6px;align-items:center;font-size:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
+.title{font-weight:700} .muted{color:var(--muted);font-size:12px}
+.grid{display:grid;gap:12px} .grid-2{grid-template-columns:1fr 1fr} .grid-3{grid-template-columns:repeat(3,1fr)} .grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1000px){.grid-4{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
+.section{margin-top:12px}.hidden{display:none}.right{margin-inline-start:auto}
+.grade{padding:12px;border:1px solid var(--border);border-radius:16px;background:var(--card);text-align:center;cursor:pointer;transition:.2s}
+.grade.active{outline:2px solid #a5b4fc;background:linear-gradient(0deg, rgba(99,102,241,.08), transparent)}
+.subject{padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:var(--card);cursor:pointer;transition:.2s}
+.subject.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.range{width:100%}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:var(--slate);color:#fff;padding:8px 12px;border-radius:12px;font-size:12px;z-index:60}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:100}
+@keyframes pop{from{transform:scale(.96);opacity:.5}to{transform:scale(1);opacity:1}} .pop{animation:pop .25s ease}
+.footer{padding:40px 0;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body class="bg">
+<header class="topbar">
+  <div class="container row" style="padding:10px 16px">
+    <div class="row" style="gap:8px">
+      <div class="logo">SF</div>
+      <div class="title">StudyFlow</div>
+      <span class="pill" id="streakPill">🔥 0</span>
+      <span class="pill" id="badgesPill">🏅 0</span>
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="btn" id="langBtn">AR/EN</button>
+      <button class="btn" id="themeBtn">Dark/Light</button>
+      <span class="pill">★ <b id="points">0</b></span>
+      <button class="btn" id="openStore">المتجر</button>
+      <button class="btn" id="openSettings">الإعدادات</button>
+    </div>
+  </div>
+</header>
+
+<main class="container" style="padding-top:14px">
+  <!-- Onboarding -->
+  <section id="onboarding" class="card pop">
+    <div id="ob0">
+      <div class="title">مرحبًا! 👋</div>
+      <div class="muted">منصة تنظّم وقتك وتكشف نقاط ضعفك وتكافئك بالنقاط.</div>
+      <div class="grid grid-3 section">
+        <div class="card"><b>الخطة الذكية</b><div class="muted">نوزّع أسبوعك حسب الأضعف</div></div>
+        <div class="card"><b>Pomodoro</b><div class="muted">جلسات 25 دقيقة مع نقاط</div></div>
+        <div class="card"><b>مراجعة سريعة</b><div class="muted">بطاقات SRS أساسية</div></div>
+      </div>
+      <div class="title section">اختر الصف الدراسي</div>
+      <div id="gradeList" class="grid grid-4 section"></div>
+      <div class="row section">
+        <button class="btn primary right" id="next0">التالي</button>
+      </div>
+    </div>
+
+    <div id="ob1" class="hidden">
+      <div class="title">اختر موادك</div>
+      <div id="subjList" class="grid grid-3 section"></div>
+      <div class="row section">
+        <button class="btn" id="back1">رجوع</button>
+        <button class="btn primary right" id="next1">التالي</button>
+      </div>
+    </div>
+
+    <div id="ob2" class="hidden">
+      <div class="title">قيّم مستواك (1 ضعيف – 5 ممتاز)</div>
+      <div id="ratingList" class="grid section"></div>
+      <div class="row section">
+        <button class="btn" id="back2">رجوع</button>
+        <button class="btn primary right" id="next2">التالي</button>
+      </div>
+    </div>
+
+    <div id="ob3" class="hidden">
+      <div class="title">وقت المذاكرة اليومي</div>
+      <div class="row section" style="gap:10px">
+        <input id="minutes" class="range" type="range" min="25" max="120" step="5" value="50">
+        <span class="pill"><span id="minVal">50</span> دقيقة</span>
+      </div>
+      <div class="muted">سنقسّم الوقت لجلسات 25 دقيقة مع تفضيل المواد الأضعف.</div>
+      <div class="row section">
+        <button class="btn" id="back3">رجوع</button>
+        <button class="btn primary right" id="finish">إنهاء وإعداد الخطة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section id="dash" class="hidden pop">
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="title">ماذا سأفعل اليوم؟</div>
+        <div class="muted">جلسة تركيز 25د • أقرب مهمة • رصيد الجوائز</div>
+        <div class="row section">
+          <button class="btn primary" id="startPomodoro">ابدأ جلسة الآن</button>
+          <button class="btn" id="planWeek">تحديث خطة الأسبوع</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">المهام</div>
+        <div id="tasks"></div>
+      </div>
+
+      <div class="card">
+        <div class="title">لوحة الإنجاز</div>
+        <div class="grid grid-3 section">
+          <div class="card"><div class="muted">دقائق هذا الأسبوع</div><b id="kpiMin">0</b></div>
+          <div class="card"><div class="muted">اكتمال الخطة</div><b id="kpiRate">0%</b></div>
+          <div class="card"><div class="muted">النقاط</div><b id="kpiPts">0</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card section">
+      <div class="title">التقويم (7 أيام)</div>
+      <div id="calendar" class="grid"></div>
+    </div>
+
+    <div class="card section">
+      <div class="title">Pomodoro (تجريبي 25 ثانية)</div>
+      <div class="row" style="gap:10px">
+        <div class="pill" id="time">00:25</div>
+        <button class="btn primary" id="toggleTimer">ابدأ</button>
+        <button class="btn" id="resetTimer">إعادة</button>
+      </div>
+    </div>
+
+    <div class="card section" id="storeCard">
+      <div class="row">
+        <div class="title">المتجر</div>
+        <span class="pill right">الرصيد: <b id="balance">0</b></span>
+      </div>
+      <div id="storeItems" class="grid grid-3 section"></div>
+    </div>
+
+    <div class="card section hidden" id="settingsCard">
+      <div class="row">
+        <div class="title">الإعدادات</div>
+        <button class="btn right" id="closeSettings">إغلاق</button>
+      </div>
+      <div class="grid grid-2 section">
+        <div>
+          <div class="muted">الاسم</div>
+          <input id="nameInput" class="btn" style="width:100%" placeholder="اكتب اسمك">
+        </div>
+        <div>
+          <div class="muted">سرعة المؤقت</div>
+          <select id="speed" class="btn" style="width:100%">
+            <option value="demo">تجريبي (25 ثانية)</option>
+            <option value="real">حقيقي (25 دقيقة)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row section">
+        <button class="btn" id="saveSettings">حفظ</button>
+        <button class="btn" id="resetAll">حذف الحساب والبيانات</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="confetti" class="confetti"></div>
+<div id="toast" class="toast hidden"></div>
+<footer class="footer">StudyFlow © <span id="year"></span> • One-file Demo • Local only</footer>
+
+<script>
+// === Helpers ===
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const storeKey='sf_onefile_v3';
+const todayISO=(d=new Date())=>{const o=d.getTimezoneOffset();const l=new Date(d.getTime()-o*60000);return l.toISOString().slice(0,10)}
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function toast(msg){const t=$('#toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),1800)}
+function confetti(emoji='🎉'){const root=$('#confetti');root.innerHTML='';for(let i=0;i<28;i++){const s=document.createElement('div');s.textContent=Math.random()<.33?'✨':emoji;Object.assign(s.style,{position:'fixed',left:Math.random()*100+'%',top:'-10px',fontSize:12+Math.random()*16+'px',transition:`transform ${900+Math.random()*1000}ms cubic-bezier(.2,.8,.2,1), opacity 1400ms`,transform:'translateY(0px)',opacity:'1'});root.appendChild(s);requestAnimationFrame(()=>{s.style.transform=`translateY(${window.innerHeight+40}px) rotate(${Math.random()*180-90}deg)`;s.style.opacity='0'});setTimeout(()=>s.remove(),1800)}}
+
+// === State ===
+let state = JSON.parse(localStorage.getItem(storeKey)||'null') || {
+  profile:{name:'راشد', demoSpeed:true, grade:null},
+  lang:'ar', theme:'light',
+  points:40, badges:[], streak:{days:0,last:todayISO()},
+  store:{balance:40, items:[
+    {id:'th1', title:'ثيم أزرق Pro', type:'theme', cost:80},
+    {id:'b1', title:'Boost x2 (24h)', type:'boost', cost:120},
+    {id:'s1', title:'أصوات تركيز LoFi', type:'sound', cost:70},
+    {id:'m1', title:'صندوق مفاجآت', type:'mystery', cost:100},
+  ], owned:[]},
+  subjects:[], calendar:[], sessions:[]
+};
+function save(){localStorage.setItem(storeKey, JSON.stringify(state)); renderAll()}
+
+// Lang/Theme
+function setLang(l){state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr'; save()}
+function setTheme(t){state.theme=t; document.documentElement.classList.toggle('dark', t==='dark'); save()}
+$('#langBtn').onclick=()=> setLang(state.lang==='ar'?'en':'ar');
+$('#themeBtn').onclick=()=> setTheme(state.theme==='dark'?'light':'dark');
+
+// Onboarding data
+const GRADES=Array.from({length:6},(_,i)=>({id:'G'+(7+i),label:'Grade '+(7+i)}));
+const SUBJECTS=['رياضيات','فيزياء','كيمياء','أحياء','عربي','إنجليزي','تاريخ','حاسوب'];
+let selectedGrade=state.profile.grade||'Grade 10';
+let selectedSubjects=state.subjects.length? state.subjects.map(s=>s.name):['رياضيات','فيزياء','إنجليزي'];
+let ratings={};
+
+// Onboarding UI
+function step(n){['#ob0','#ob1','#ob2','#ob3'].forEach((id,i)=> $(id).classList.toggle('hidden',i!==n))}
+function mountGrades(){
+  const box=document.getElementById('gradeList'); box.innerHTML='';
+  GRADES.forEach(g=>{
+    const el=document.createElement('div');
+    el.className='grade'+(selectedGrade===g.label?' active':'');
+    el.innerHTML=`<div style="font-weight:700">${g.id}</div><div class="muted" style="margin-top:2px">${g.label}</div>`;
+    el.onclick=()=>{selectedGrade=g.label; mountGrades()};
+    box.appendChild(el);
+  })
+}
+function mountSubjects(){
+  const box=document.getElementById('subjList'); box.innerHTML='';
+  SUBJECTS.forEach(name=>{
+    const el=document.createElement('div');
+    el.className='subject'+(selectedSubjects.includes(name)?' active':'');
+    el.textContent=name;
+    el.onclick=()=>{
+      if(selectedSubjects.includes(name)) selectedSubjects=selectedSubjects.filter(x=>x!==name);
+      else selectedSubjects=[...selectedSubjects,name];
+      mountSubjects()
+    };
+    box.appendChild(el);
+  })
+}
+function mountRatings(){
+  const box=document.getElementById('ratingList'); box.innerHTML='';
+  selectedSubjects.forEach(name=>{
+    const row=document.createElement('div'); row.className='card';
+    const val=ratings[name]||3;
+    row.innerHTML=`<div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+      <div><b>${name}</b></div>
+      <div>${[1,2,3,4,5].map(r=>`<button data-name="${name}" data-r="${r}" class="btn" style="margin-inline:2px;${r===val?'background:var(--green);color:#fff;border-color:var(--green)':''}">${r}</button>`).join('')}</div>
+    </div>`;
+    row.onclick=e=>{
+      const r=parseInt(e.target.getAttribute('data-r'));
+      const nm=e.target.getAttribute('data-name');
+      if(!r||!nm) return;
+      ratings[nm]=r; mountRatings();
+    };
+    box.appendChild(row);
+  })
+}
+document.getElementById('next0').onclick=()=> step(1);
+document.getElementById('back1').onclick=()=> step(0);
+document.getElementById('next1').onclick=()=> step(2);
+document.getElementById('back2').onclick=()=> step(1);
+document.getElementById('next2').onclick=()=> step(3);
+document.getElementById('back3').onclick=()=> step(2);
+document.getElementById('minutes').oninput=e=> document.getElementById('minVal').textContent=e.target.value;
+document.getElementById('finish').onclick=()=>{
+  const subs = selectedSubjects.map(name=>({
+   
