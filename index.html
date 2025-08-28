@@ -21,28 +21,38 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
 .btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:600;transition:transform .15s ease, box-shadow .15s ease}
 .btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.06)}
 .btn.primary{border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
-.btn.ghost{background:transparent}.btn[disabled]{opacity:.6;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.6;cursor:not-allowed}
 .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;display:inline-flex;gap:6px;align-items:center}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
-.title{font-weight:800}.muted{color:var(--muted);font-size:13px}
+.title{font-weight:800}
+.muted{color:var(--muted);font-size:13px}
 .grid{display:grid;gap:12px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:repeat(3,1fr)}
 .g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
-.section{margin-top:14px}.hidden{display:none}.right{margin-inline-start:auto}
-.hero{padding:24px 0}.hero h1{margin:0;font-size:28px}.hero p{margin:.3rem 0 0}
+.section{margin-top:14px}
+.hidden{display:none}
+.modal.hidden{display:none !important;}
+.right{margin-inline-start:auto}
+.hero{padding:24px 0}
+.hero h1{margin:0;font-size:28px}
+.hero p{margin:.3rem 0 0}
 .kbd{font:600 12px/1 system-ui;background:#111;color:#fff;padding:4px 8px;border-radius:8px}
 .grade,.subject{cursor:pointer;transition:.2s;border:1px solid var(--border);border-radius:14px;background:var(--card);padding:12px;text-align:center}
-.grade.active{outline:2px solid #a5b4fc}.subject.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.grade.active{outline:2px solid #a5b4fc}
+.subject.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
 .range{width:100%}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#111;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;z-index:80}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:75}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:16px;z-index:90}
 .modal .sheet{max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.fade{animation:fade .25s ease}@keyframes fade{from{opacity:.5;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
-@keyframes pop{from{transform:scale(.96);opacity:.5}to{transform:scale(1);opacity:1}} .pop{animation:pop .25s ease}
+.fade{animation:fade .25s ease}
+@keyframes fade{from{opacity:.5;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+@keyframes pop{from{transform:scale(.96);opacity:.5}to{transform:scale(1);opacity:1}}
+.pop{animation:pop .25s ease}
 .link{color:#4f46e5;text-decoration:underline;cursor:pointer}
 .input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text)}
 .footer{padding:40px 0;text-align:center;color:var(--muted);font-size:12px}
@@ -120,7 +130,10 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
             </div>
             <div id="passHint" class="muted" style="margin-top:6px"></div>
           </div>
-          <button id="authSubmit" class="btn primary" style="align-self:end;min-width:140px">استمرار</button>
+          <div class="row" style="gap:8px;align-items:end">
+            <button id="authSubmit" class="btn primary" style="min-width:140px">استمرار</button>
+            <button id="guestBtn" class="btn">تابع كضيف</button>
+          </div>
         </div>
       </div>
 
@@ -253,29 +266,28 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
 <footer class="footer">StudyFlow © <span id="year"></span> • Demo • محلي فقط</footer>
 
 <script>
-// ===== Utilities =====
+// ===== Helpers =====
 const $=sel=>document.querySelector(sel), $$=sel=>Array.from(document.querySelectorAll(sel));
 const todayISO=(d=new Date())=>{const o=d.getTimezoneOffset();return new Date(d.getTime()-o*60000).toISOString().slice(0,10)}
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),1800)}
 function confetti(emoji='🎉'){const root=$('#confetti');root.innerHTML='';for(let i=0;i<28;i++){const s=document.createElement('div');s.textContent=Math.random()<.33?'✨':emoji;Object.assign(s.style,{position:'fixed',left:Math.random()*100+'%',top:'-10px',fontSize:12+Math.random()*16+'px',transition:`transform ${900+Math.random()*1000}ms cubic-bezier(.2,.8,.2,1), opacity 1400ms`,transform:'translateY(0)',opacity:'1'});root.appendChild(s);requestAnimationFrame(()=>{s.style.transform=`translateY(${window.innerHeight+40}px) rotate(${Math.random()*180-90}deg)`;s.style.opacity='0'});setTimeout(()=>s.remove(),1800)}}
+function fmt(s){const m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')}
 
-// ===== Lightweight hash (fallback for demo) =====
-function hashLite(str){
-  // تجزئة بسيطة للتجربة فقط (ليست أمانًا حقيقيًا)
-  let h=2166136261>>>0;
-  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i); h=(h*16777619)>>>0}
-  return ('h'+h.toString(16));
-}
+// ===== Safe storage (fallback if localStorage blocked) =====
+const __MEM__={ACCOUNTS:{},ACTIVE:null};
+function canLocalStorage(){try{const k='__t__';localStorage.setItem(k,'1');localStorage.removeItem(k);return true}catch(e){return false}}
+const USE_LS=canLocalStorage();
+const ACCOUNTS_KEY='sf_accounts_v2', ACTIVE_KEY='sf_active_user_v2';
+const getAccounts=()=> USE_LS ? JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}') : __MEM__.ACCOUNTS;
+const setAccounts=o=>{ if(USE_LS){ try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(o))}catch{} } else { __MEM__.ACCOUNTS=o } };
+const getActive =()=> USE_LS ? (localStorage.getItem(ACTIVE_KEY)||null) : __MEM__.ACTIVE;
+const setActive =u=>{ if(USE_LS){ try{localStorage.setItem(ACTIVE_KEY,u)}catch{} } else { __MEM__.ACTIVE=u } };
 
-// ===== Local "Auth" (per-device) =====
-const ACCOUNTS_KEY='sf_accounts_v2'; // {username:{pass, data:{...}}}  // pass: hashLite
-const ACTIVE_KEY  ='sf_active_user_v2'; // username
-const getAccounts=()=>JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}');
-const setAccounts=o=>localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(o));
-const getActive  =()=>localStorage.getItem(ACTIVE_KEY);
-const setActive  =u=>localStorage.setItem(ACTIVE_KEY,u);
+// ===== Demo hash (not secure, just for local demo) =====
+function hashLite(str){ let h=2166136261>>>0; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=(h*16777619)>>>0 } return 'h'+h.toString(16) }
 
+// ===== Default state =====
 function defaultState(name='طالب'){ return {
   profile:{name, demoSpeed:true, grade:null},
   lang:'ar', theme:'light',
@@ -289,86 +301,65 @@ function defaultState(name='طالب'){ return {
   subjects:[], calendar:[], sessions:[]
 }}
 
-let state = null;
-
+// ===== App state load/save =====
+let state=null;
 function loadUserState(){ const u=getActive(); if(!u) return null; const acc=getAccounts()[u]; return acc?acc.data:null }
-function saveUserState(){ const u=getActive(); if(!u) return; const acc=getAccounts(); acc[u].data=state; setAccounts(acc) }
-
-// ===== Header buttons =====
-function renderHeader(){ $('#points').textContent=state?.points||0; $('#balance').textContent=state?.store?.balance||0; $('#badgesPill').innerHTML='🏅 '+(state?.badges?.length||0); $('#streakPill').innerHTML='🔥 '+(state?.streak?.days||0) }
+function saveUserState(){ const u=getActive(); if(!u) return; const acc=getAccounts(); if(!acc[u]) acc[u]={pass:'',data:state}; else acc[u].data=state; setAccounts(acc) }
 function save(){ saveUserState(); renderAll() }
-function setLang(l){ state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr'; save() }
-function setTheme(t){ state.theme=t; document.documentElement.classList.toggle('dark',t==='dark'); save() }
-$('#langBtn').onclick = ()=> state && setLang(state.lang==='ar'?'en':'ar');
-$('#themeBtn').onclick= ()=> state && setTheme(state.theme==='dark'?'light':'dark');
 
-// ===== Auth Modal (open/close, tabs, submit) =====
-const modal = $('#authModal');
-const btnOpenAuth = $('#openAuth');
-const btnCloseX = $('#authCloseX');
-const btnSubmit = $('#authSubmit');
-const tabSignup = $('#tabSignup');
-const tabLogin  = $('#tabLogin');
-const nameWrap  = $('#nameWrap');
-const nameInput = $('#authName');
-const userInput = $('#authUser');
-const passInput = $('#authPass');
-const togglePass= $('#togglePass');
-const errBox    = $('#authError');
-let authMode = 'signup';
+// ===== Header controls =====
+function renderHeader(){ $('#points').textContent=state?.points||0; $('#balance').textContent=state?.store?.balance||0; $('#badgesPill').innerHTML='🏅 '+(state?.badges?.length||0); $('#streakPill').innerHTML='🔥 '+(state?.streak?.days||0) }
+function setLang(l){ if(!state) return; state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr'; save() }
+function setTheme(t){ if(!state) return; state.theme=t; document.documentElement.classList.toggle('dark',t==='dark'); save() }
+$('#langBtn').onclick = ()=> setLang((state?.lang||'ar')==='ar'?'en':'ar');
+$('#themeBtn').onclick= ()=> setTheme((state?.theme||'light')==='dark'?'light':'dark');
 
-function openAuth(){
-  modal.classList.remove('hidden'); document.body.style.overflow='hidden';
-  errBox.style.display='none';
-  if(authMode==='signup'){ tabSignup.classList.add('primary'); tabLogin.classList.remove('primary'); nameWrap.style.display='block'; }
-  else { tabLogin.classList.add('primary'); tabSignup.classList.remove('primary'); nameWrap.style.display='none'; }
-  (authMode==='signup'?nameInput:userInput).focus();
+// ===== Auth modal wiring =====
+const modal=$('#authModal'), btnOpenAuth=$('#openAuth'), btnCloseX=$('#authCloseX'), btnSubmit=$('#authSubmit');
+const tabSignup=$('#tabSignup'), tabLogin=$('#tabLogin'), nameWrap=$('#nameWrap');
+const nameInput=$('#authName'), userInput=$('#authUser'), passInput=$('#authPass'), togglePass=$('#togglePass'), errBox=$('#authError'), guestBtn=$('#guestBtn');
+let authMode='signup';
+function openAuth(){ modal.classList.remove('hidden'); document.body.style.overflow='hidden'; errBox.style.display='none';
+  if(authMode==='signup'){ tabSignup.classList.add('primary'); tabLogin.classList.remove('primary'); nameWrap.style.display='block'; nameInput.focus() }
+  else{ tabLogin.classList.add('primary'); tabSignup.classList.remove('primary'); nameWrap.style.display='none'; userInput.focus() }
 }
 function closeAuth(){ modal.classList.add('hidden'); document.body.style.overflow='' }
-btnOpenAuth.onclick = openAuth; $('#ctaStart').onclick=openAuth;
-btnCloseX.onclick   = closeAuth;
-modal.addEventListener('click', (e)=>{ if(e.target===modal) closeAuth() });
-document.addEventListener('keydown',(e)=>{ if(!modal.classList.contains('hidden') && e.key==='Escape') closeAuth() });
+$('#ctaStart').onclick=openAuth; btnOpenAuth.onclick=openAuth; btnCloseX.onclick=closeAuth;
+modal.addEventListener('click',e=>{ if(e.target===modal) closeAuth() });
+document.addEventListener('keydown',e=>{ if(!modal.classList.contains('hidden')&&e.key==='Escape') closeAuth() });
+tabSignup.onclick=()=>{authMode='signup';tabSignup.classList.add('primary');tabLogin.classList.remove('primary');nameWrap.style.display='block'}
+tabLogin.onclick =()=>{authMode='login'; tabLogin.classList.add('primary'); tabSignup.classList.remove('primary'); nameWrap.style.display='none'}
+togglePass.onclick=e=>{e.preventDefault(); const t=passInput.type==='password'?'text':'password'; passInput.type=t; togglePass.textContent=t==='text'?'🙈':'👁'}
+passInput.addEventListener('input',()=>{const v=passInput.value,score=(v.length>=8)+/[A-Z]/.test(v)+/[a-z]/.test(v)+/\d/.test(v);const msgs=['ضعيفة','متوسطة','جيدة','قوية'];$('#passHint').textContent=v?('قوة كلمة المرور: '+msgs[Math.max(0,score-1)]):''})
 
-tabSignup.onclick = ()=>{ authMode='signup'; tabSignup.classList.add('primary'); tabLogin.classList.remove('primary'); nameWrap.style.display='block' }
-tabLogin.onclick  = ()=>{ authMode='login';  tabLogin.classList.add('primary');  tabSignup.classList.remove('primary'); nameWrap.style.display='none' }
+// Signup/Login core
+function doSignup(name,username,password){ const acc=getAccounts(); if(acc[username]) throw new Error('اسم المستخدم موجود'); acc[username]={pass:hashLite(password),data:defaultState(name)}; setAccounts(acc); setActive(username); return acc[username].data }
+function doLogin(username,password){ const acc=getAccounts()[username]; if(!acc) throw new Error('الحساب غير موجود'); if(acc.pass!==hashLite(password)) throw new Error('كلمة المرور خاطئة'); setActive(username); return acc.data }
 
-togglePass.onclick= (e)=>{ e.preventDefault(); const t=passInput.type==='password'?'text':'password'; passInput.type=t; togglePass.textContent = t==='text'?'🙈':'👁' }
-passInput.addEventListener('input', ()=>{
-  const v=passInput.value, score=(v.length>=8)+/[A-Z]/.test(v)+/[a-z]/.test(v)+/\d/.test(v);
-  const msgs=['ضعيفة','متوسطة','جيدة','قوية']; $('#passHint').textContent = v?('قوة كلمة المرور: '+msgs[Math.max(0,score-1)]):'';
-});
-
-function doSignup(name,username,password){
-  const acc=getAccounts(); if(acc[username]) throw new Error('اسم المستخدم موجود');
-  acc[username]={pass:hashLite(password), data:defaultState(name)}; setAccounts(acc); setActive(username); return acc[username].data;
-}
-function doLogin(username,password){
-  const acc=getAccounts()[username]; if(!acc) throw new Error('الحساب غير موجود');
-  if(acc.pass!==hashLite(password)) throw new Error('كلمة المرور خاطئة');
-  setActive(username); return acc.data;
-}
-
-btnSubmit.onclick = ()=>{
+btnSubmit.onclick=()=>{
   try{
     errBox.style.display='none'; btnSubmit.disabled=true; btnSubmit.textContent='جارٍ المعالجة…';
     const name=(nameInput.value.trim()||'طالب'), username=userInput.value.trim(), password=passInput.value;
     if(!username||!password) throw new Error('أدخل اسم المستخدم وكلمة المرور');
-
-    state = (authMode==='signup') ? doSignup(name,username,password) : doLogin(username,password);
-
-    // إغلاق مضمون + انتقال
-    closeAuth();
-    setTimeout(()=>modal.classList.add('hidden'),50); // تأكيد
+    state = (authMode==='signup')? doSignup(name,username,password) : doLogin(username,password);
+    closeAuth(); document.getElementById('authModal').classList.add('hidden');
     toast('تم تسجيل الدخول ✔'); renderAll();
-    if(!(state.subjects?.length)) { // أول مرة → Onboarding
-      $('#landing').classList.add('hidden'); $('#onboarding').classList.remove('hidden'); step(0);
-    }
+    if(!(state.subjects?.length)){ $('#landing').classList.add('hidden'); $('#onboarding').classList.remove('hidden'); step(0) }
   }catch(e){
     errBox.style.display='block'; errBox.textContent='خطأ: '+(e.message||'تحقّق من البيانات');
   }finally{
     btnSubmit.disabled=false; btnSubmit.textContent='استمرار';
   }
+};
+
+// Guest flow
+guestBtn.onclick=()=>{
+  try{
+    const uname='guest_'+Math.random().toString(36).slice(2,7);
+    const acc=getAccounts(); acc[uname]={pass:hashLite('guest'),data:defaultState('ضيف')}; setAccounts(acc); setActive(uname);
+    state=acc[uname].data; closeAuth(); document.getElementById('authModal').classList.add('hidden');
+    toast('تم الدخول كضيف ✔'); renderAll(); $('#landing').classList.add('hidden'); $('#onboarding').classList.remove('hidden'); step(0);
+  }catch(e){ errBox.style.display='block'; errBox.textContent='تعذّر الدخول كضيف: '+(e.message||'غير متوقع') }
 };
 
 // ===== Onboarding =====
@@ -387,7 +378,6 @@ $('#minutes').oninput=e=> $('#minVal').textContent=e.target.value;
 $('#finish').onclick=()=>{
   state.profile.grade=selectedGrade;
   state.subjects = selectedSubjects.map(name=>({id:'s_'+name,name,rating:ratings[name]||3,lessons:[{id:'l1_'+name,title:'درس 1',summary:'ملخص قصير',tasks:[{id:'t1_'+name,title:'مهمة قصيرة',due:todayISO(addDays(new Date(),1)),done:false}]}]}));
-  // خطة أسبوعية موزونة حسب الضعف
   const out=[], start=new Date(); const weights=state.subjects.map(s=>({id:s.id,w:6-(s.rating||3)})); const sum=weights.reduce((a,b)=>a+b.w,0)||1;
   for(let i=0;i<7;i++){const date=todayISO(addDays(start,i)); for(let k=0;k<2;k++){ let r=Math.random()*sum, chosen=weights[0].id; for(const {id,w} of weights){ if((r-=w)<=0){ chosen=id; break } } out.push({id:'sess_'+i+'_'+k,subjectId:chosen,date,minutes:25,planned:true}) }}
   state.calendar=out; save(); confetti('🎯');
@@ -397,31 +387,86 @@ $('#finish').onclick=()=>{
 // ===== Dashboard =====
 function onboarded(){ return state && state.subjects.length>0 && state.calendar.length>0 }
 function gain(pts, why){ state.points+=pts; state.store.balance+=pts; toast(`+${pts} • ${why}`) }
-function renderTasks(){ const box=$('#tasks'); if(!state?.subjects?.length){ box.innerHTML='<div class="muted">لا توجد مهام — أكمل الإعداد.</div>'; return } box.innerHTML=''; state.subjects.forEach(sub=>{ const card=document.createElement('div'); card.className='card'; const tasks=sub.lessons?.[0]?.tasks||[]; card.innerHTML=`<div class="title">${sub.name}</div><div class="muted">${sub.lessons?.[0]?.summary||''}</div><div style="margin-top:6px">${tasks.map(t=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${t.done?'checked':''} data-ids="${sub.id}|${sub.lessons[0].id}|${t.id}"><span ${t.done?'style="text-decoration:line-through;color:var(--muted)"':''}>${t.title}</span><span class="muted right">تسليم: ${t.due}</span></label>`).join('')}</div>`; card.addEventListener('change',e=>{const ids=e.target.getAttribute('data-ids'); if(!ids) return; const [sid,lid,tid]=ids.split('|'); state.subjects=state.subjects.map(s=> s.id!==sid? s : ({...s,lessons:s.lessons.map(ls=> ls.id!==lid? ls : ({...ls,tasks:ls.tasks.map(tt=> tt.id!==tid? tt : ({...tt,done:!tt.done}))}))})); gain(20,'تسليم مهمة'); confetti('✅'); save()}); box.appendChild(card) }) }
-function renderCalendar(){ const box=$('#calendar'); if(!state.calendar.length){box.innerHTML='<div class="muted">لا توجد خطة أسبوعية — أنشئها من الأعلى.</div>'; return} box.innerHTML=''; const groups={}; state.calendar.forEach(s=>{(groups[s.date]??=[]).push(s)}); Object.entries(groups).forEach(([date,sessions])=>{ const el=document.createElement('div'); el.className='card'; el.innerHTML=`<div class="muted">${date}</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${sessions.map(s=>`<span class="pill">${(state.subjects.find(x=>x.id===s.subjectId)?.name)||'—'} • ${s.minutes}د</span>`).join('')}</div>`; box.appendChild(el) }) }
-function renderKPIs(){ const weekStart=addDays(new Date(),-6); const weekly=state.sessions.filter(s=> new Date(s.date)>=weekStart); const weeklyMin=weekly.reduce((a,s)=>a+s.minutes,0); const rate=state.calendar.length? Math.round(state.sessions.filter(s=>s.completed).length/state.calendar.length*100):0; $('#kpiMin').textContent=weeklyMin; $('#kpiRate').textContent=rate+'%'; $('#kpiPts').textContent=state.points; }
-function planWeek(){ if(!state?.subjects?.length) return toast('أكمل الإعداد أولًا'); const out=[], start=new Date(); const w=state.subjects.map(s=>({id:s.id,w:6-(s.rating||3)})); const sum=w.reduce((a,b)=>a+b.w,0)||1; for(let i=0;i<7;i++){const date=todayISO(addDays(start,i)); for(let k=0;k<2;k++){ let r=Math.random()*sum, chosen=w[0].id; for(const {id, w:ww} of w){ if((r-=ww)<=0){ chosen=id; break } } out.push({id:'sess_'+i+'_'+k,subjectId:chosen,date,minutes:25,planned:true}) }} state.calendar=out; confetti('✨'); save() }
+function renderTasks(){ const box=$('#tasks'); if(!state?.subjects?.length){ box.innerHTML='<div class="muted">لا توجد مهام — أكمل الإعداد.</div>'; return } box.innerHTML='';
+  state.subjects.forEach(sub=>{ const card=document.createElement('div'); card.className='card';
+    const tasks=sub.lessons?.[0]?.tasks||[];
+    card.innerHTML=`<div class="title">${sub.name}</div><div class="muted">${sub.lessons?.[0]?.summary||''}</div>
+    <div style="margin-top:6px">${tasks.map(t=>`<label style="display:flex;gap:8px;align-items:center">
+      <input type="checkbox" ${t.done?'checked':''} data-ids="${sub.id}|${sub.lessons[0].id}|${t.id}">
+      <span ${t.done?'style="text-decoration:line-through;color:var(--muted)"':''}>${t.title}</span>
+      <span class="muted right">تسليم: ${t.due}</span></label>`).join('')}</div>`;
+    card.addEventListener('change',e=>{
+      const ids=e.target.getAttribute('data-ids'); if(!ids) return;
+      const [sid,lid,tid]=ids.split('|');
+      state.subjects=state.subjects.map(s=> s.id!==sid? s : ({...s,lessons:s.lessons.map(ls=> ls.id!==lid? ls : ({...ls,tasks:ls.tasks.map(tt=> tt.id!==tid? tt : ({...tt,done:!tt.done}))}))}));
+      gain(20,'تسليم مهمة'); confetti('✅'); save()
+    });
+    box.appendChild(card)
+  })
+}
+function renderCalendar(){ const box=$('#calendar'); if(!state.calendar.length){box.innerHTML='<div class="muted">لا توجد خطة أسبوعية — أنشئها من الأعلى.</div>'; return} box.innerHTML='';
+  const groups={}; state.calendar.forEach(s=>{(groups[s.date]??=[]).push(s)});
+  Object.entries(groups).forEach(([date,sessions])=>{
+    const el=document.createElement('div'); el.className='card';
+    el.innerHTML=`<div class="muted">${date}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+      ${sessions.map(s=>`<span class="pill">${(state.subjects.find(x=>x.id===s.subjectId)?.name)||'—'} • ${s.minutes}د</span>`).join('')}</div>`;
+    box.appendChild(el)
+  })
+}
+function renderKPIs(){ const weekStart=addDays(new Date(),-6); const weekly=state.sessions.filter(s=> new Date(s.date)>=weekStart);
+  const weeklyMin=weekly.reduce((a,s)=>a+s.minutes,0);
+  const rate=state.calendar.length? Math.round(state.sessions.filter(s=>s.completed).length/state.calendar.length*100):0;
+  $('#kpiMin').textContent=weeklyMin; $('#kpiRate').textContent=rate+'%'; $('#kpiPts').textContent=state.points;
+}
+function renderStore(){ const box=$('#storeItems'); box.innerHTML='';
+  (state.store.items||[]).forEach(it=>{
+    const div=document.createElement('div'); div.className='card';
+    div.innerHTML=`<div class="title">${it.title}</div><div class="muted">النوع: ${it.type}</div>
+    <div class="row section"><span class="pill">${it.cost} نقطة</span><button class="btn primary right">استبدال</button></div>`;
+    div.querySelector('button').onclick=()=>{ if(state.store.balance<it.cost){toast('الرصيد لا يكفي'); return}
+      state.store.balance-=it.cost; (state.store.owned||[]).push(it); state.store.items=state.store.items.filter(x=>x.id!==it.id);
+      confetti('🎁'); save()
+    };
+    box.appendChild(div)
+  })
+}
+function planWeek(){ if(!state?.subjects?.length) return toast('أكمل الإعداد أولًا');
+  const out=[], start=new Date(); const w=state.subjects.map(s=>({id:s.id,w:6-(s.rating||3)}));
+  const sum=w.reduce((a,b)=>a+b.w,0)||1;
+  for(let i=0;i<7;i++){const date=todayISO(addDays(start,i)); for(let k=0;k<2;k++){
+    let r=Math.random()*sum, chosen=w[0].id; for(const {id, w:ww} of w){ if((r-=ww)<=0){ chosen=id; break } }
+    out.push({id:'sess_'+i+'_'+k,subjectId:chosen,date,minutes:25,planned:true})
+  }}
+  state.calendar=out; confetti('✨'); save()
+}
 $('#planWeek').onclick=planWeek;
 
 // Pomodoro
 let timer=null, seconds=25, real=false;
-function fmt(s){const m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')}
 function updateTime(){ $('#time').textContent=fmt(seconds) }
-function toggleTimer(){ if(timer){clearInterval(timer); timer=null; $('#toggleTimer').textContent='ابدأ'; return} $('#toggleTimer').textContent='إيقاف'; timer=setInterval(()=>{seconds--; updateTime(); if(seconds<=0){clearInterval(timer); timer=null; $('#toggleTimer').textContent='ابدأ'; seconds= real?25*60:25; updateTime(); gain(10,'إنهاء جلسة'); state.sessions.push({date:todayISO(),minutes:25,completed:true}); confetti('⭐'); save()}},1000) }
+function toggleTimer(){ if(timer){clearInterval(timer); timer=null; $('#toggleTimer').textContent='ابدأ'; return}
+  $('#toggleTimer').textContent='إيقاف';
+  timer=setInterval(()=>{seconds--; updateTime();
+    if(seconds<=0){clearInterval(timer); timer=null; $('#toggleTimer').textContent='ابدأ';
+      seconds= real?25*60:25; updateTime();
+      if(state){ state.sessions.push({date:todayISO(),minutes:25,completed:true}); state.points+=10; state.store.balance+=10; toast('+10 • إنهاء جلسة'); confetti('⭐'); save() }
+    }},1000)
+}
 function resetTimer(){ if(timer){clearInterval(timer); timer=null} seconds= real?25*60:25; updateTime(); $('#toggleTimer').textContent='ابدأ' }
 $('#toggleTimer').onclick=toggleTimer; $('#resetTimer').onclick=resetTimer; $('#startPomodoro').onclick=toggleTimer;
 
-// Store & Settings
+// Settings
 $('#openStore').onclick=()=> $('#storeCard').scrollIntoView({behavior:'smooth'});
 $('#openSettings').onclick=()=> $('#settingsCard').classList.remove('hidden');
 $('#closeSettings').onclick=()=> $('#settingsCard').classList.add('hidden');
-$('#saveSettings').onclick=()=>{ const nm=$('#nameInput').value.trim(); const sp=$('#speed').value; if(nm) state.profile.name=nm; real=(sp==='real'); seconds= real?25*60:25; updateTime(); toast('تم الحفظ'); save() };
-$('#resetAll').onclick=()=>{ if(confirm('متأكد؟ سيمسح هذا الحساب من هذا الجهاز.')){ const u=getActive(); const acc=getAccounts(); delete acc[u]; setAccounts(acc); localStorage.removeItem(ACTIVE_KEY); location.reload() } };
+$('#saveSettings').onclick=()=>{ if(!state) return; const nm=$('#nameInput').value.trim(); const sp=$('#speed').value; if(nm) state.profile.name=nm; real=(sp==='real'); seconds= real?25*60:25; updateTime(); toast('تم الحفظ'); save() };
+$('#resetAll').onclick=()=>{ if(confirm('متأكد؟ سيمسح هذا الحساب من هذا الجهاز.')){ const u=getActive(); const acc=getAccounts(); delete acc[u]; setAccounts(acc); if(USE_LS){try{localStorage.removeItem(ACTIVE_KEY)}catch{}} else {__MEM__.ACTIVE=null} location.reload() } };
 
-// ===== Initial render =====
+// ===== Render root =====
 function renderAll(){
   $('#year').textContent=new Date().getFullYear();
-  if(!state){ // no account yet
+  if(!state){
     $('#landing').classList.remove('hidden');
     $('#onboarding').classList.add('hidden');
     $('#dash').classList.add('hidden');
@@ -435,23 +480,22 @@ function renderAll(){
     $('#onboarding').classList.add('hidden');
     $('#dash').classList.remove('hidden');
   }
-  renderHeader(); renderTasks(); renderCalendar(); renderKPIs();
-  // متجر
-  (function renderStore(){ const box=$('#storeItems'); box.innerHTML=''; (state.store.items||[]).forEach(it=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<div class="title">${it.title}</div><div class="muted">النوع: ${it.type}</div><div class="row section"><span class="pill">${it.cost} نقطة</span><button class="btn primary right">استبدال</button></div>`; div.querySelector('button').onclick=()=>{ if(state.store.balance<it.cost){toast('الرصيد لا يكفي'); return} state.store.balance-=it.cost; (state.store.owned||[]).push(it); state.store.items=state.store.items.filter(x=>x.id!==it.id); confetti('🎁'); save() }; box.appendChild(div) }) })();
-  // تهيئة بعض الحقول
+  renderHeader(); renderTasks(); renderCalendar(); renderKPIs(); renderStore();
   $('#nameInput').value=state?.profile?.name||'';
-  document.documentElement.classList.toggle('dark', state?.theme==='dark');
-  document.documentElement.lang = state?.lang||'ar';
-  document.documentElement.dir  = (state?.lang||'ar')==='ar'?'rtl':'ltr';
-  // مؤقت
-  (function initTimer(){ const sp='demo'; const real=(sp==='real'); let s= real?25*60:25; $('#time').textContent=fmt(s) })();
+  document.documentElement.classList.toggle('dark',(state?.theme||'light')==='dark');
+  document.documentElement.lang=state?.lang||'ar';
+  document.documentElement.dir =(state?.lang||'ar')==='ar'?'rtl':'ltr';
+  // init timer display
+  seconds = (real?25*60:25); updateTime();
 }
 
-// تحميل المستخدم (إن وجد)
+// ===== Boot =====
 state = loadUserState();
 renderAll();
 </script>
 </body>
 </html>
+
+
 
 
