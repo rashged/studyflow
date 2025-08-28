@@ -68,7 +68,7 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
 </header>
 
 <main class="container">
-  <!-- Landing / Intro Cards -->
+  <!-- Landing -->
   <section id="landing" class="hero">
     <h1>مرحبًا بك في StudyFlow 👋</h1>
     <p class="muted">منصة دراسة ذكية تنظّم وقتك وتكشف نقاط ضعفك وتكافئك بالنقاط.</p>
@@ -257,17 +257,24 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
 const $=sel=>document.querySelector(sel), $$=sel=>Array.from(document.querySelectorAll(sel));
 const todayISO=(d=new Date())=>{const o=d.getTimezoneOffset();return new Date(d.getTime()-o*60000).toISOString().slice(0,10)}
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x}
-const sha1=t=>new Blob([t]).arrayBuffer().then(b=>crypto.subtle.digest('SHA-1',b)).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''));
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),1800)}
 function confetti(emoji='🎉'){const root=$('#confetti');root.innerHTML='';for(let i=0;i<28;i++){const s=document.createElement('div');s.textContent=Math.random()<.33?'✨':emoji;Object.assign(s.style,{position:'fixed',left:Math.random()*100+'%',top:'-10px',fontSize:12+Math.random()*16+'px',transition:`transform ${900+Math.random()*1000}ms cubic-bezier(.2,.8,.2,1), opacity 1400ms`,transform:'translateY(0)',opacity:'1'});root.appendChild(s);requestAnimationFrame(()=>{s.style.transform=`translateY(${window.innerHeight+40}px) rotate(${Math.random()*180-90}deg)`;s.style.opacity='0'});setTimeout(()=>s.remove(),1800)}}
 
-// ===== Local "Auth" =====
-const ACCOUNTS_KEY='sf_accounts_v1'; // {username:{passHash, data:{...}}}
-const ACTIVE_KEY ='sf_active_user_v1'; // username
+// ===== Lightweight hash (fallback for demo) =====
+function hashLite(str){
+  // تجزئة بسيطة للتجربة فقط (ليست أمانًا حقيقيًا)
+  let h=2166136261>>>0;
+  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i); h=(h*16777619)>>>0}
+  return ('h'+h.toString(16));
+}
+
+// ===== Local "Auth" (per-device) =====
+const ACCOUNTS_KEY='sf_accounts_v2'; // {username:{pass, data:{...}}}  // pass: hashLite
+const ACTIVE_KEY  ='sf_active_user_v2'; // username
 const getAccounts=()=>JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}');
 const setAccounts=o=>localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(o));
-const getActive=()=>localStorage.getItem(ACTIVE_KEY);
-const setActive=u=>localStorage.setItem(ACTIVE_KEY,u);
+const getActive  =()=>localStorage.getItem(ACTIVE_KEY);
+const setActive  =u=>localStorage.setItem(ACTIVE_KEY,u);
 
 function defaultState(name='طالب'){ return {
   profile:{name, demoSpeed:true, grade:null},
@@ -281,13 +288,13 @@ function defaultState(name='طالب'){ return {
   ], owned:[]},
   subjects:[], calendar:[], sessions:[]
 }}
+
 let state = null;
 
-const getUser=()=>getActive()?getAccounts()[getActive()]:null;
-function loadUserState(){ const acc=getUser(); return acc?acc.data:null }
+function loadUserState(){ const u=getActive(); if(!u) return null; const acc=getAccounts()[u]; return acc?acc.data:null }
 function saveUserState(){ const u=getActive(); if(!u) return; const acc=getAccounts(); acc[u].data=state; setAccounts(acc) }
 
-// ===== Header toggles =====
+// ===== Header buttons =====
 function renderHeader(){ $('#points').textContent=state?.points||0; $('#balance').textContent=state?.store?.balance||0; $('#badgesPill').innerHTML='🏅 '+(state?.badges?.length||0); $('#streakPill').innerHTML='🔥 '+(state?.streak?.days||0) }
 function save(){ saveUserState(); renderAll() }
 function setLang(l){ state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr'; save() }
@@ -332,29 +339,36 @@ passInput.addEventListener('input', ()=>{
   const msgs=['ضعيفة','متوسطة','جيدة','قوية']; $('#passHint').textContent = v?('قوة كلمة المرور: '+msgs[Math.max(0,score-1)]):'';
 });
 
-const sha = s => sha1(s);
-async function signup({name,username,password}){
+function doSignup(name,username,password){
   const acc=getAccounts(); if(acc[username]) throw new Error('اسم المستخدم موجود');
-  acc[username]={passHash:await sha(password), data:defaultState(name)}; setAccounts(acc); setActive(username); return acc[username].data;
+  acc[username]={pass:hashLite(password), data:defaultState(name)}; setAccounts(acc); setActive(username); return acc[username].data;
 }
-async function login({username,password}){
+function doLogin(username,password){
   const acc=getAccounts()[username]; if(!acc) throw new Error('الحساب غير موجود');
-  if((await sha(password))!==acc.passHash) throw new Error('كلمة المرور خاطئة');
+  if(acc.pass!==hashLite(password)) throw new Error('كلمة المرور خاطئة');
   setActive(username); return acc.data;
 }
 
-btnSubmit.onclick = async ()=>{
-  errBox.style.display='none'; btnSubmit.disabled=true; btnSubmit.textContent='جارٍ المعالجة…';
+btnSubmit.onclick = ()=>{
   try{
+    errBox.style.display='none'; btnSubmit.disabled=true; btnSubmit.textContent='جارٍ المعالجة…';
     const name=(nameInput.value.trim()||'طالب'), username=userInput.value.trim(), password=passInput.value;
     if(!username||!password) throw new Error('أدخل اسم المستخدم وكلمة المرور');
-    state = authMode==='signup' ? await signup({name,username,password}) : await login({username,password});
-    closeAuth(); toast('تم تسجيل الدخول ✔'); renderAll();
-    if(!(state.subjects?.length)) { // go to onboarding if first time
+
+    state = (authMode==='signup') ? doSignup(name,username,password) : doLogin(username,password);
+
+    // إغلاق مضمون + انتقال
+    closeAuth();
+    setTimeout(()=>modal.classList.add('hidden'),50); // تأكيد
+    toast('تم تسجيل الدخول ✔'); renderAll();
+    if(!(state.subjects?.length)) { // أول مرة → Onboarding
       $('#landing').classList.add('hidden'); $('#onboarding').classList.remove('hidden'); step(0);
     }
-  }catch(e){ errBox.style.display='block'; errBox.textContent='خطأ: '+(e.message||'تحقّق من البيانات') }
-  finally{ btnSubmit.disabled=false; btnSubmit.textContent='استمرار' }
+  }catch(e){
+    errBox.style.display='block'; errBox.textContent='خطأ: '+(e.message||'تحقّق من البيانات');
+  }finally{
+    btnSubmit.disabled=false; btnSubmit.textContent='استمرار';
+  }
 };
 
 // ===== Onboarding =====
@@ -404,16 +418,14 @@ $('#closeSettings').onclick=()=> $('#settingsCard').classList.add('hidden');
 $('#saveSettings').onclick=()=>{ const nm=$('#nameInput').value.trim(); const sp=$('#speed').value; if(nm) state.profile.name=nm; real=(sp==='real'); seconds= real?25*60:25; updateTime(); toast('تم الحفظ'); save() };
 $('#resetAll').onclick=()=>{ if(confirm('متأكد؟ سيمسح هذا الحساب من هذا الجهاز.')){ const u=getActive(); const acc=getAccounts(); delete acc[u]; setAccounts(acc); localStorage.removeItem(ACTIVE_KEY); location.reload() } };
 
-function renderStore(){ const box=$('#storeItems'); box.innerHTML=''; state.store.items.forEach(it=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<div class="title">${it.title}</div><div class="muted">النوع: ${it.type}</div><div class="row section"><span class="pill">${it.cost} نقطة</span><button class="btn primary right">استبدال</button></div>`; div.querySelector('button').onclick=()=>{ if(state.store.balance<it.cost){toast('الرصيد لا يكفي'); return} state.store.balance-=it.cost; state.store.owned.push(it); state.store.items=state.store.items.filter(x=>x.id!==it.id); confetti('🎁'); save() }; box.appendChild(div) }) }
-
-// ===== Initial render & routing =====
+// ===== Initial render =====
 function renderAll(){
   $('#year').textContent=new Date().getFullYear();
   if(!state){ // no account yet
     $('#landing').classList.remove('hidden');
     $('#onboarding').classList.add('hidden');
     $('#dash').classList.add('hidden');
-  }else if(!onboarded()){
+  }else if(!(state.subjects?.length) || !(state.calendar?.length)){
     $('#landing').classList.add('hidden');
     $('#onboarding').classList.remove('hidden');
     $('#dash').classList.add('hidden');
@@ -423,18 +435,23 @@ function renderAll(){
     $('#onboarding').classList.add('hidden');
     $('#dash').classList.remove('hidden');
   }
-  renderHeader(); renderTasks(); renderCalendar(); renderKPIs(); renderStore();
+  renderHeader(); renderTasks(); renderCalendar(); renderKPIs();
+  // متجر
+  (function renderStore(){ const box=$('#storeItems'); box.innerHTML=''; (state.store.items||[]).forEach(it=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<div class="title">${it.title}</div><div class="muted">النوع: ${it.type}</div><div class="row section"><span class="pill">${it.cost} نقطة</span><button class="btn primary right">استبدال</button></div>`; div.querySelector('button').onclick=()=>{ if(state.store.balance<it.cost){toast('الرصيد لا يكفي'); return} state.store.balance-=it.cost; (state.store.owned||[]).push(it); state.store.items=state.store.items.filter(x=>x.id!==it.id); confetti('🎁'); save() }; box.appendChild(div) }) })();
+  // تهيئة بعض الحقول
   $('#nameInput').value=state?.profile?.name||'';
   document.documentElement.classList.toggle('dark', state?.theme==='dark');
   document.documentElement.lang = state?.lang||'ar';
   document.documentElement.dir  = (state?.lang||'ar')==='ar'?'rtl':'ltr';
-  updateTime();
+  // مؤقت
+  (function initTimer(){ const sp='demo'; const real=(sp==='real'); let s= real?25*60:25; $('#time').textContent=fmt(s) })();
 }
 
-// Load existing session (if any)
+// تحميل المستخدم (إن وجد)
 state = loadUserState();
 renderAll();
 </script>
 </body>
 </html>
+
 
