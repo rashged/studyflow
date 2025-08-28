@@ -6,10 +6,12 @@
 <title>StudyFlow — منصة الدراسة الذكية</title>
 <style>
 :root{
-  --indigo:#6366f1;--violet:#8b5cf6;--bg:#f6f7ff;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444
+  --indigo:#6366f1;--violet:#8b5cf6;--bg:#f6f7ff;--card:#ffffff;--text:#0f172a;
+  --muted:#64748b;--border:#e2e8f0;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444
 }
 html.dark{--bg:#0b1220;--card:#0f172a;--text:#f1f5f9;--muted:#94a3b8;--border:#1f2a3a}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text)}
 .container{max-width:1100px;margin:0 auto;padding:16px}
 .topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);background:rgba(255,255,255,.6);border-bottom:1px solid var(--border)}
 html.dark .topbar{background:rgba(15,23,42,.6)}
@@ -18,28 +20,27 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
 .logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--indigo),var(--violet))}
 .btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:600;transition:transform .15s ease, box-shadow .15s ease}
 .btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.06)}
-.btn.primary{border:none;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff}
-.btn.ghost{background:transparent}
+.btn.primary{border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.btn.ghost{background:transparent}.btn[disabled]{opacity:.6;cursor:not-allowed}
 .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;display:inline-flex;gap:6px;align-items:center}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
-.title{font-weight:800}
-.muted{color:var(--muted);font-size:13px}
-.grid{display:grid;gap:12px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.title{font-weight:800}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
 .section{margin-top:14px}.hidden{display:none}.right{margin-inline-start:auto}
-.hero{padding:24px 0}
-.hero h1{margin:0;font-size:28px}
-.hero p{margin:.3rem 0 0}
-.kbd{font:600 12px/1 system-ui; background:#111; color:#fff; padding:4px 8px; border-radius:8px}
+.hero{padding:24px 0}.hero h1{margin:0;font-size:28px}.hero p{margin:.3rem 0 0}
+.kbd{font:600 12px/1 system-ui;background:#111;color:#fff;padding:4px 8px;border-radius:8px}
 .grade,.subject{cursor:pointer;transition:.2s;border:1px solid var(--border);border-radius:14px;background:var(--card);padding:12px;text-align:center}
-.grade.active{outline:2px solid #a5b4fc}
-.subject.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.grade.active{outline:2px solid #a5b4fc}.subject.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
 .range{width:100%}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#111;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;z-index:60}
-.confetti{position:fixed;inset:0;pointer-events:none;z-index:80}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:16px;z-index:70}
-.modal .sheet{max-width:460px;width:100%}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#111;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;z-index:80}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:75}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:16px;z-index:90}
+.modal .sheet{max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .fade{animation:fade .25s ease}@keyframes fade{from{opacity:.5;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
 @keyframes pop{from{transform:scale(.96);opacity:.5}to{transform:scale(1);opacity:1}} .pop{animation:pop .25s ease}
 .link{color:#4f46e5;text-decoration:underline;cursor:pointer}
@@ -72,18 +73,9 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
     <h1>مرحبًا بك في StudyFlow 👋</h1>
     <p class="muted">منصة دراسة ذكية تنظّم وقتك وتكشف نقاط ضعفك وتكافئك بالنقاط.</p>
     <div class="grid g3 section">
-      <div class="card fade">
-        <b>خطة يومية ذكية</b>
-        <p class="muted">توزيع تلقائي حسب المواد والأضعف لديك.</p>
-      </div>
-      <div class="card fade">
-        <b>Pomodoro + مكافآت</b>
-        <p class="muted">جلسات تركيز مع نقاط وشارات وسلسلة أيام.</p>
-      </div>
-      <div class="card fade">
-        <b>تقارير بسيطة</b>
-        <p class="muted">كيف تتقدم؟ وأين تضع وقتك؟</p>
-      </div>
+      <div class="card fade"><b>خطة يومية ذكية</b><p class="muted">توزيع تلقائي حسب الأضعف لديك.</p></div>
+      <div class="card fade"><b>Pomodoro + مكافآت</b><p class="muted">جلسات تركيز مع نقاط وشارات.</p></div>
+      <div class="card fade"><b>تقارير بسيطة</b><p class="muted">كيف تتقدم؟ وأين تضع وقتك؟</p></div>
     </div>
     <div class="row section">
       <button class="btn primary" id="ctaStart">ابدأ الآن</button>
@@ -91,25 +83,50 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
     </div>
   </section>
 
-  <!-- Auth Modal (signup / login) -->
-  <section id="authModal" class="modal hidden">
-    <div class="sheet card fade">
-      <div class="title">أهلاً! ✨</div>
-      <p class="muted">أنشئ حسابًا للتجربة (محليًا على جهازك).</p>
+  <!-- Auth Modal -->
+  <section id="authModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="sheet card fade" style="position:relative">
+      <button id="authCloseX" class="btn ghost" style="position:absolute;left:12px;top:12px">✕</button>
+      <div class="row" style="gap:10px;margin-bottom:8px">
+        <div class="logo">SF</div>
+        <div>
+          <div class="title">حساب StudyFlow</div>
+          <div class="muted">حساب محلي للتجربة على هذا الجهاز</div>
+        </div>
+        <span class="pill right kbd">محلي</span>
+      </div>
+
+      <div class="row" style="gap:6px;margin:8px 0">
+        <button id="tabSignup" class="btn primary">إنشاء حساب</button>
+        <button id="tabLogin"  class="btn">تسجيل دخول</button>
+        <span class="right muted">اضغط خارج النافذة أو Esc للإغلاق</span>
+      </div>
+
       <div class="grid g2 section">
-        <input id="authName" class="input" placeholder="الاسم (يظهر في اللوحة)">
-        <input id="authUser" class="input" placeholder="اسم المستخدم">
-        <input id="authPass" type="password" class="input" placeholder="كلمة المرور">
-        <select id="authMode" class="input">
-          <option value="signup">إنشاء حساب</option>
-          <option value="login">تسجيل دخول</option>
-        </select>
+        <div id="nameWrap">
+          <label class="muted">الاسم</label>
+          <input id="authName" class="input" placeholder="مثال: راشد">
+        </div>
+        <div>
+          <label class="muted">اسم المستخدم</label>
+          <input id="authUser" class="input" placeholder="username">
+        </div>
+        <div class="g2" style="grid-column:1 / -1;display:grid;gap:12px;grid-template-columns:1fr auto">
+          <div>
+            <label class="muted">كلمة المرور</label>
+            <div class="row" style="gap:8px">
+              <input id="authPass" type="password" class="input" placeholder="••••••••" style="flex:1">
+              <button id="togglePass" class="btn">👁</button>
+            </div>
+            <div id="passHint" class="muted" style="margin-top:6px"></div>
+          </div>
+          <button id="authSubmit" class="btn primary" style="align-self:end;min-width:140px">استمرار</button>
+        </div>
       </div>
-      <div class="row section">
-        <button class="btn" id="authCancel">إغلاق</button>
-        <button class="btn primary right" id="authSubmit">استمرار</button>
+
+      <div id="authError" class="card" style="display:none;margin-top:10px;background:#fff2f2;border-color:#fecaca;color:#b91c1c">
+        حدث خطأ — تحقّق من المدخلات وحاول مرة أخرى.
       </div>
-      <p class="muted" style="margin-top:8px">⚠️ للتجربة فقط — تُحفظ البيانات في هذا الجهاز (localStorage).</p>
     </div>
   </section>
 
@@ -240,92 +257,117 @@ html.dark .topbar{background:rgba(15,23,42,.6)}
 const $=sel=>document.querySelector(sel), $$=sel=>Array.from(document.querySelectorAll(sel));
 const todayISO=(d=new Date())=>{const o=d.getTimezoneOffset();return new Date(d.getTime()-o*60000).toISOString().slice(0,10)}
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x}
-const sha1 = t => new Blob([t]).arrayBuffer().then(b=>crypto.subtle.digest('SHA-1',b)).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''));
+const sha1=t=>new Blob([t]).arrayBuffer().then(b=>crypto.subtle.digest('SHA-1',b)).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''));
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),1800)}
 function confetti(emoji='🎉'){const root=$('#confetti');root.innerHTML='';for(let i=0;i<28;i++){const s=document.createElement('div');s.textContent=Math.random()<.33?'✨':emoji;Object.assign(s.style,{position:'fixed',left:Math.random()*100+'%',top:'-10px',fontSize:12+Math.random()*16+'px',transition:`transform ${900+Math.random()*1000}ms cubic-bezier(.2,.8,.2,1), opacity 1400ms`,transform:'translateY(0)',opacity:'1'});root.appendChild(s);requestAnimationFrame(()=>{s.style.transform=`translateY(${window.innerHeight+40}px) rotate(${Math.random()*180-90}deg)`;s.style.opacity='0'});setTimeout(()=>s.remove(),1800)}}
 
-// ===== Local "Auth" (per-device) =====
+// ===== Local "Auth" =====
 const ACCOUNTS_KEY='sf_accounts_v1'; // {username:{passHash, data:{...}}}
 const ACTIVE_KEY ='sf_active_user_v1'; // username
 const getAccounts=()=>JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}');
 const setAccounts=o=>localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(o));
 const getActive=()=>localStorage.getItem(ACTIVE_KEY);
 const setActive=u=>localStorage.setItem(ACTIVE_KEY,u);
+
+function defaultState(name='طالب'){ return {
+  profile:{name, demoSpeed:true, grade:null},
+  lang:'ar', theme:'light',
+  points:40, badges:[], streak:{days:0,last:todayISO()},
+  store:{balance:40, items:[
+    {id:'th1', title:'ثيم أزرق Pro', type:'theme', cost:80},
+    {id:'b1', title:'Boost x2 (24h)', type:'boost', cost:120},
+    {id:'s1', title:'أصوات تركيز LoFi', type:'sound', cost:70},
+    {id:'m1', title:'صندوق مفاجآت', type:'mystery', cost:100},
+  ], owned:[]},
+  subjects:[], calendar:[], sessions:[]
+}}
+let state = null;
+
+const getUser=()=>getActive()?getAccounts()[getActive()]:null;
+function loadUserState(){ const acc=getUser(); return acc?acc.data:null }
+function saveUserState(){ const u=getActive(); if(!u) return; const acc=getAccounts(); acc[u].data=state; setAccounts(acc) }
+
+// ===== Header toggles =====
+function renderHeader(){ $('#points').textContent=state?.points||0; $('#balance').textContent=state?.store?.balance||0; $('#badgesPill').innerHTML='🏅 '+(state?.badges?.length||0); $('#streakPill').innerHTML='🔥 '+(state?.streak?.days||0) }
+function save(){ saveUserState(); renderAll() }
+function setLang(l){ state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr'; save() }
+function setTheme(t){ state.theme=t; document.documentElement.classList.toggle('dark',t==='dark'); save() }
+$('#langBtn').onclick = ()=> state && setLang(state.lang==='ar'?'en':'ar');
+$('#themeBtn').onclick= ()=> state && setTheme(state.theme==='dark'?'light':'dark');
+
+// ===== Auth Modal (open/close, tabs, submit) =====
+const modal = $('#authModal');
+const btnOpenAuth = $('#openAuth');
+const btnCloseX = $('#authCloseX');
+const btnSubmit = $('#authSubmit');
+const tabSignup = $('#tabSignup');
+const tabLogin  = $('#tabLogin');
+const nameWrap  = $('#nameWrap');
+const nameInput = $('#authName');
+const userInput = $('#authUser');
+const passInput = $('#authPass');
+const togglePass= $('#togglePass');
+const errBox    = $('#authError');
+let authMode = 'signup';
+
+function openAuth(){
+  modal.classList.remove('hidden'); document.body.style.overflow='hidden';
+  errBox.style.display='none';
+  if(authMode==='signup'){ tabSignup.classList.add('primary'); tabLogin.classList.remove('primary'); nameWrap.style.display='block'; }
+  else { tabLogin.classList.add('primary'); tabSignup.classList.remove('primary'); nameWrap.style.display='none'; }
+  (authMode==='signup'?nameInput:userInput).focus();
+}
+function closeAuth(){ modal.classList.add('hidden'); document.body.style.overflow='' }
+btnOpenAuth.onclick = openAuth; $('#ctaStart').onclick=openAuth;
+btnCloseX.onclick   = closeAuth;
+modal.addEventListener('click', (e)=>{ if(e.target===modal) closeAuth() });
+document.addEventListener('keydown',(e)=>{ if(!modal.classList.contains('hidden') && e.key==='Escape') closeAuth() });
+
+tabSignup.onclick = ()=>{ authMode='signup'; tabSignup.classList.add('primary'); tabLogin.classList.remove('primary'); nameWrap.style.display='block' }
+tabLogin.onclick  = ()=>{ authMode='login';  tabLogin.classList.add('primary');  tabSignup.classList.remove('primary'); nameWrap.style.display='none' }
+
+togglePass.onclick= (e)=>{ e.preventDefault(); const t=passInput.type==='password'?'text':'password'; passInput.type=t; togglePass.textContent = t==='text'?'🙈':'👁' }
+passInput.addEventListener('input', ()=>{
+  const v=passInput.value, score=(v.length>=8)+/[A-Z]/.test(v)+/[a-z]/.test(v)+/\d/.test(v);
+  const msgs=['ضعيفة','متوسطة','جيدة','قوية']; $('#passHint').textContent = v?('قوة كلمة المرور: '+msgs[Math.max(0,score-1)]):'';
+});
+
+const sha = s => sha1(s);
 async function signup({name,username,password}){
   const acc=getAccounts(); if(acc[username]) throw new Error('اسم المستخدم موجود');
-  acc[username]={passHash:await sha1(password), data:defaultState(name)};
-  setAccounts(acc); setActive(username); return acc[username].data;
+  acc[username]={passHash:await sha(password), data:defaultState(name)}; setAccounts(acc); setActive(username); return acc[username].data;
 }
 async function login({username,password}){
   const acc=getAccounts()[username]; if(!acc) throw new Error('الحساب غير موجود');
-  const ok = (await sha1(password))===acc.passHash; if(!ok) throw new Error('كلمة المرور خاطئة');
+  if((await sha(password))!==acc.passHash) throw new Error('كلمة المرور خاطئة');
   setActive(username); return acc.data;
 }
-function loadUserState(){ const u=getActive(); if(!u) return null; const acc=getAccounts()[u]; return acc?acc.data:null }
-function saveUserState(state){ const u=getActive(); if(!u) return; const acc=getAccounts(); acc[u].data=state; setAccounts(acc) }
 
-// ===== App State =====
-function defaultState(name='طالب'){
-  return {
-    profile:{name, demoSpeed:true, grade:null},
-    lang:'ar', theme:'light',
-    points:40, badges:[], streak:{days:0,last:todayISO()},
-    store:{balance:40, items:[
-      {id:'th1', title:'ثيم أزرق Pro', type:'theme', cost:80},
-      {id:'b1', title:'Boost x2 (24h)', type:'boost', cost:120},
-      {id:'s1', title:'أصوات تركيز LoFi', type:'sound', cost:70},
-      {id:'m1', title:'صندوق مفاجآت', type:'mystery', cost:100},
-    ], owned:[]},
-    subjects:[], calendar:[], sessions:[]
-  }
-}
-let state = loadUserState() || null;
-const onboarded = ()=> state && state.subjects.length>0 && state.calendar.length>0;
-
-function renderHeader(){ $('#points').textContent=state?.points||0; $('#balance').textContent=state?.store?.balance||0; $('#badgesPill').innerHTML='🏅 '+(state?.badges?.length||0); $('#streakPill').innerHTML='🔥 '+(state?.streak?.days||0) }
-function save(){ saveUserState(state); renderAll() }
-function setLang(l){ state.lang=l; document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr'; save() }
-function setTheme(t){ state.theme=t; document.documentElement.classList.toggle('dark',t==='dark'); save() }
-
-// ===== UI Wiring (Landing / Auth) =====
-$('#ctaStart').onclick=()=>{$('#authModal').classList.remove('hidden')}
-$('#openAuth').onclick = ()=> $('#authModal').classList.remove('hidden');
-$('#authCancel').onclick=()=> $('#authModal').classList.add('hidden');
-$('#authSubmit').onclick=async()=>{
+btnSubmit.onclick = async ()=>{
+  errBox.style.display='none'; btnSubmit.disabled=true; btnSubmit.textContent='جارٍ المعالجة…';
   try{
-    const name=$('#authName').value.trim()||'طالب';
-    const username=$('#authUser').value.trim();
-    const password=$('#authPass').value;
-    const mode=$('#authMode').value;
-    if(!username||!password) return toast('أدخل اسم المستخدم وكلمة المرور');
-    state = mode==='signup' ? await signup({name,username,password}) : await login({username,password});
-    $('#authModal').classList.add('hidden');
-    toast('تم الدخول ✔'); renderAll();
-    // بعد الدخول، انتقل للإعداد السريع
-    if(!onboarded()){ $('#landing').classList.add('hidden'); $('#onboarding').classList.remove('hidden'); step(0) }
-  }catch(e){ toast(e.message||'خطأ') }
-}
-$('#langBtn').onclick = ()=> setLang(state?.lang==='ar'?'en':'ar');
-$('#themeBtn').onclick= ()=> setTheme(state?.theme==='dark'?'light':'dark');
+    const name=(nameInput.value.trim()||'طالب'), username=userInput.value.trim(), password=passInput.value;
+    if(!username||!password) throw new Error('أدخل اسم المستخدم وكلمة المرور');
+    state = authMode==='signup' ? await signup({name,username,password}) : await login({username,password});
+    closeAuth(); toast('تم تسجيل الدخول ✔'); renderAll();
+    if(!(state.subjects?.length)) { // go to onboarding if first time
+      $('#landing').classList.add('hidden'); $('#onboarding').classList.remove('hidden'); step(0);
+    }
+  }catch(e){ errBox.style.display='block'; errBox.textContent='خطأ: '+(e.message||'تحقّق من البيانات') }
+  finally{ btnSubmit.disabled=false; btnSubmit.textContent='استمرار' }
+};
 
 // ===== Onboarding =====
-const GRADES = Array.from({length:6},(_,i)=>({id:'G'+(7+i),label:'Grade '+(7+i)}));
-const SUBJECTS = ['رياضيات','فيزياء','كيمياء','أحياء','عربي','إنجليزي','تاريخ','حاسوب'];
-let selectedGrade='Grade 10';
-let selectedSubjects=['رياضيات','فيزياء','إنجليزي'];
-let ratings={};
-
+const GRADES=Array.from({length:6},(_,i)=>({id:'G'+(7+i),label:'Grade '+(7+i)}));
+const SUBJECTS=['رياضيات','فيزياء','كيمياء','أحياء','عربي','إنجليزي','تاريخ','حاسوب'];
+let selectedGrade='Grade 10', selectedSubjects=['رياضيات','فيزياء','إنجليزي'], ratings={};
 function step(n){['#ob0','#ob1','#ob2','#ob3'].forEach((id,i)=>$(id).classList.toggle('hidden',i!==n))}
-function mountGrades(){ const box=$('#gradeList'); box.innerHTML=''; GRADES.forEach(g=>{ const el=document.createElement('div'); el.className='grade'; el.innerHTML=`<b>${g.id}</b><div class="muted">${g.label}</div>`; if(selectedGrade===g.label) el.classList.add('active'); el.onclick=()=>{selectedGrade=g.label; mountGrades()}; box.appendChild(el) }) }
-function mountSubjects(){ const box=$('#subjList'); box.innerHTML=''; SUBJECTS.forEach(n=>{ const el=document.createElement('div'); el.className='subject'; el.textContent=n; if(selectedSubjects.includes(n)) el.classList.add('active'); el.onclick=()=>{ selectedSubjects = selectedSubjects.includes(n) ? selectedSubjects.filter(x=>x!==n) : [...selectedSubjects,n]; mountSubjects() }; box.appendChild(el) }) }
+function mountGrades(){ const box=$('#gradeList'); box.innerHTML=''; GRADES.forEach(g=>{ const el=document.createElement('div'); el.className='grade'+(selectedGrade===g.label?' active':''); el.innerHTML=`<b>${g.id}</b><div class="muted">${g.label}</div>`; el.onclick=()=>{selectedGrade=g.label; mountGrades()}; box.appendChild(el) }) }
+function mountSubjects(){ const box=$('#subjList'); box.innerHTML=''; SUBJECTS.forEach(n=>{ const el=document.createElement('div'); el.className='subject'+(selectedSubjects.includes(n)?' active':''); el.textContent=n; el.onclick=()=>{ selectedSubjects = selectedSubjects.includes(n)?selectedSubjects.filter(x=>x!==n):[...selectedSubjects,n]; mountSubjects() }; box.appendChild(el) }) }
 function mountRatings(){ const box=$('#ratingList'); box.innerHTML=''; selectedSubjects.forEach(n=>{ const card=document.createElement('div'); card.className='card'; const val=ratings[n]||3; card.innerHTML=`<div class="row space"><b>${n}</b><div>${[1,2,3,4,5].map(r=>`<button class="btn" data-n="${n}" data-r="${r}" style="margin-inline:2px;${r===val?'background:var(--ok);color:#fff;border-color:var(--ok)':''}">${r}</button>`).join('')}</div></div>`; card.onclick=e=>{const r=parseInt(e.target.getAttribute('data-r')); const nm=e.target.getAttribute('data-n'); if(!r||!nm) return; ratings[nm]=r; mountRatings()}; box.appendChild(card) }) }
-
-$('#next0').onclick=()=> step(1);
-$('#back1').onclick=()=> step(0);
-$('#next1').onclick=()=> step(2);
-$('#back2').onclick=()=> step(1);
-$('#next2').onclick=()=> step(3);
-$('#back3').onclick=()=> step(2);
+$('#next0').onclick=()=> step(1); $('#back1').onclick=()=> step(0);
+$('#next1').onclick=()=> step(2); $('#back2').onclick=()=> step(1);
+$('#next2').onclick=()=> step(3); $('#back3').onclick=()=> step(2);
 $('#minutes').oninput=e=> $('#minVal').textContent=e.target.value;
 
 $('#finish').onclick=()=>{
@@ -339,6 +381,7 @@ $('#finish').onclick=()=>{
 };
 
 // ===== Dashboard =====
+function onboarded(){ return state && state.subjects.length>0 && state.calendar.length>0 }
 function gain(pts, why){ state.points+=pts; state.store.balance+=pts; toast(`+${pts} • ${why}`) }
 function renderTasks(){ const box=$('#tasks'); if(!state?.subjects?.length){ box.innerHTML='<div class="muted">لا توجد مهام — أكمل الإعداد.</div>'; return } box.innerHTML=''; state.subjects.forEach(sub=>{ const card=document.createElement('div'); card.className='card'; const tasks=sub.lessons?.[0]?.tasks||[]; card.innerHTML=`<div class="title">${sub.name}</div><div class="muted">${sub.lessons?.[0]?.summary||''}</div><div style="margin-top:6px">${tasks.map(t=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${t.done?'checked':''} data-ids="${sub.id}|${sub.lessons[0].id}|${t.id}"><span ${t.done?'style="text-decoration:line-through;color:var(--muted)"':''}>${t.title}</span><span class="muted right">تسليم: ${t.due}</span></label>`).join('')}</div>`; card.addEventListener('change',e=>{const ids=e.target.getAttribute('data-ids'); if(!ids) return; const [sid,lid,tid]=ids.split('|'); state.subjects=state.subjects.map(s=> s.id!==sid? s : ({...s,lessons:s.lessons.map(ls=> ls.id!==lid? ls : ({...ls,tasks:ls.tasks.map(tt=> tt.id!==tid? tt : ({...tt,done:!tt.done}))}))})); gain(20,'تسليم مهمة'); confetti('✅'); save()}); box.appendChild(card) }) }
 function renderCalendar(){ const box=$('#calendar'); if(!state.calendar.length){box.innerHTML='<div class="muted">لا توجد خطة أسبوعية — أنشئها من الأعلى.</div>'; return} box.innerHTML=''; const groups={}; state.calendar.forEach(s=>{(groups[s.date]??=[]).push(s)}); Object.entries(groups).forEach(([date,sessions])=>{ const el=document.createElement('div'); el.className='card'; el.innerHTML=`<div class="muted">${date}</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${sessions.map(s=>`<span class="pill">${(state.subjects.find(x=>x.id===s.subjectId)?.name)||'—'} • ${s.minutes}د</span>`).join('')}</div>`; box.appendChild(el) }) }
@@ -358,16 +401,15 @@ $('#toggleTimer').onclick=toggleTimer; $('#resetTimer').onclick=resetTimer; $('#
 $('#openStore').onclick=()=> $('#storeCard').scrollIntoView({behavior:'smooth'});
 $('#openSettings').onclick=()=> $('#settingsCard').classList.remove('hidden');
 $('#closeSettings').onclick=()=> $('#settingsCard').classList.add('hidden');
-$('#saveSettings').onclick=()=>{ const nm=$('#nameInput').value.trim(); const sp=$('#speed').value; if(nm) state.profile.name=nm; real=(sp==='real'); seconds= real? 25*60:25; updateTime(); toast('تم الحفظ'); save() };
-$('#resetAll').onclick=()=>{ if(confirm('متأكد؟ سيمسح هذا الحساب من هذا الجهاز.')){ const u=localStorage.getItem('sf_active_user_v1'); const acc=JSON.parse(localStorage.getItem('sf_accounts_v1')||'{}'); delete acc[u]; localStorage.setItem('sf_accounts_v1',JSON.stringify(acc)); localStorage.removeItem('sf_active_user_v1'); location.reload() } };
+$('#saveSettings').onclick=()=>{ const nm=$('#nameInput').value.trim(); const sp=$('#speed').value; if(nm) state.profile.name=nm; real=(sp==='real'); seconds= real?25*60:25; updateTime(); toast('تم الحفظ'); save() };
+$('#resetAll').onclick=()=>{ if(confirm('متأكد؟ سيمسح هذا الحساب من هذا الجهاز.')){ const u=getActive(); const acc=getAccounts(); delete acc[u]; setAccounts(acc); localStorage.removeItem(ACTIVE_KEY); location.reload() } };
 
 function renderStore(){ const box=$('#storeItems'); box.innerHTML=''; state.store.items.forEach(it=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<div class="title">${it.title}</div><div class="muted">النوع: ${it.type}</div><div class="row section"><span class="pill">${it.cost} نقطة</span><button class="btn primary right">استبدال</button></div>`; div.querySelector('button').onclick=()=>{ if(state.store.balance<it.cost){toast('الرصيد لا يكفي'); return} state.store.balance-=it.cost; state.store.owned.push(it); state.store.items=state.store.items.filter(x=>x.id!==it.id); confetti('🎁'); save() }; box.appendChild(div) }) }
 
-// Initial render
+// ===== Initial render & routing =====
 function renderAll(){
   $('#year').textContent=new Date().getFullYear();
-  // landing / onboarding / dash
-  if(!state){ // بدون تسجيل
+  if(!state){ // no account yet
     $('#landing').classList.remove('hidden');
     $('#onboarding').classList.add('hidden');
     $('#dash').classList.add('hidden');
@@ -385,12 +427,14 @@ function renderAll(){
   $('#nameInput').value=state?.profile?.name||'';
   document.documentElement.classList.toggle('dark', state?.theme==='dark');
   document.documentElement.lang = state?.lang||'ar';
-  document.documentElement.dir = (state?.lang||'ar')==='ar'?'rtl':'ltr';
+  document.documentElement.dir  = (state?.lang||'ar')==='ar'?'rtl':'ltr';
   updateTime();
 }
+
+// Load existing session (if any)
+state = loadUserState();
 renderAll();
 </script>
 </body>
 </html>
-
 
